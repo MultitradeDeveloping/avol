@@ -1,0 +1,34 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © TimurAnitsky
+// t.me/dauntrend
+
+//@version=5
+
+strategy("str", overlay=true,initial_capital = 10, default_qty_type = strategy.cash , default_qty_value = 5, margin_long=100, margin_short=100, max_bars_back=2880, pyramiding = 100, commission_value = 0.1)
+
+k = input(2, title = 'average volatility by .. klines')
+x = input(10, title = 'in .. times')
+
+vol = math.abs((high/low)-1)
+float avol = 0
+n = 0
+while n <= k
+    n+=1
+    avol := avol + math.abs((high[n]/low[n])-1)
+
+avol := avol/10
+
+y = vol/avol
+plot(y)
+hline(x)
+
+longCondition = y>x and close<open
+shortCondition = y>x and close>open
+if (longCondition)
+    strategy.entry("Long", strategy.long)
+
+// longCondition = y>10 and close>open
+if (shortCondition)
+    strategy.entry("Short", strategy.short)
+
+// close*high/low
